@@ -1,0 +1,26 @@
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python cache & test cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Processed binary vector index and SQLite database (reproducible from build_index.py)
+data/processed/*.faiss
+data/processed/*.index
+data/processed/*.bin
+data/processed/*.db
+
+# Local environment & secrets
+.env
+.env.local
+*.log
+
+# Streamlit config / cache
+.streamlit/

@@ -1,0 +1,10 @@
+image_id,model_id,local_path,view_type,content_hash,download_status
+img_TEST-MODEL-001_1,TEST-MODEL-001,data/fixtures/images/TEST-MODEL-001_primary.png,primary,synth_hash_1,local_generated
+img_TEST-MODEL-001_2,TEST-MODEL-001,data/fixtures/images/TEST-MODEL-001_angle.png,angle,synth_hash_2,local_generated
+img_TEST-MODEL-002_1,TEST-MODEL-002,data/fixtures/images/TEST-MODEL-002_primary.png,primary,synth_hash_1,local_generated
+img_TEST-MODEL-002_2,TEST-MODEL-002,data/fixtures/images/TEST-MODEL-002_angle.png,angle,synth_hash_2,local_generated
+img_TEST-MODEL-003_1,TEST-MODEL-003,data/fixtures/images/TEST-MODEL-003_primary.png,primary,synth_hash_1,local_generated
+img_TEST-MODEL-004_1,TEST-MODEL-004,data/fixtures/images/TEST-MODEL-004_primary.png,primary,synth_hash_1,local_generated
+img_TEST-MODEL-004_2,TEST-MODEL-004,data/fixtures/images/TEST-MODEL-004_angle.png,angle,synth_hash_2,local_generated
+img_TEST-MODEL-005_1,TEST-MODEL-005,data/fixtures/images/TEST-MODEL-005_primary.png,primary,synth_hash_1,local_generated
+img_TEST-MODEL-006_1,TEST-MODEL-006,data/fixtures/images/TEST-MODEL-006_primary.png,primary,synth_hash_1,local_generated

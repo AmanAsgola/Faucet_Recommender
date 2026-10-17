@@ -1,0 +1,12 @@
+# Delta Faucet Identification POC Pinned Dependencies
+torch==2.14.1
+torchvision==0.29.1
+open-clip-torch==3.3.0
+faiss-cpu==1.15.1
+pillow==12.3.0
+pandas==3.0.6
+streamlit==1.66.0
+pytest==9.1.1
+python-dotenv==1.2.4
+requests==2.34.2
+pymupdf==1.28.2

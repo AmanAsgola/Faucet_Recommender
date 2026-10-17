@@ -1,0 +1,12 @@
+{
+  "build_timestamp": "2026-10-17T13:43:00.201247+00:00",
+  "model_name": "ViT-B-32",
+  "pretrained": "openai",
+  "embedding_dimension": 512,
+  "vector_count": 297,
+  "open_clip_version": "3.3.0",
+  "torch_version": "2.14.1+cpu",
+  "catalog_source": "F:\\Faucet\\data\\products.csv (sha256:dbc4dd4535b9)",
+  "skipped_count": 0,
+  "failures": []
+}

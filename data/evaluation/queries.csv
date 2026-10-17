@@ -1,0 +1,5 @@
+query_image_path,true_model_id,is_in_catalog,image_quality,category,notes
+data/evaluation/images/query_test_001.png,TEST-MODEL-001,True,good,Kitchen,Query photo with slight crop
+data/evaluation/images/query_test_002.png,TEST-MODEL-002,True,good,Kitchen,Query photo with low lighting background
+data/evaluation/images/query_test_004.png,TEST-MODEL-004,True,angled,Bath,Bathroom faucet query
+data/evaluation/images/query_negative_object.png,,False,good,Other,Negative out-of-catalog test image (abstention expected)

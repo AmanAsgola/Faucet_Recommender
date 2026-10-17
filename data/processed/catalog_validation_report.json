@@ -1,0 +1,34 @@
+{
+  "catalog_file": "F:\\Faucet\\data\\products.csv",
+  "manifest_file": "F:\\Faucet\\data\\image_manifest.csv",
+  "catalog": {
+    "is_valid": true,
+    "errors": [],
+    "warnings": [],
+    "stats": {
+      "total_rows": 297,
+      "checked_local_images": 297,
+      "missing_local_images": 0,
+      "metadata_coverage": {
+        "finish": "297/297 (100.0%)",
+        "spout_type": "297/297 (100.0%)",
+        "handle_configuration": "297/297 (100.0%)",
+        "category": "297/297 (100.0%)",
+        "source_name": "297/297 (100.0%)",
+        "source_checked_at": "297/297 (100.0%)",
+        "mounting_type": "297/297 (100.0%)",
+        "inventory_status": "297/297 (100.0%)",
+        "specifications_json": "297/297 (100.0%)"
+      }
+    }
+  },
+  "manifest": {
+    "is_valid": true,
+    "errors": [],
+    "warnings": [],
+    "stats": {
+      "total_manifest_images": 297,
+      "missing_image_files_count": 0
+    }
+  }
+}

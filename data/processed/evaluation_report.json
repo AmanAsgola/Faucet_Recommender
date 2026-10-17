@@ -1,0 +1,27 @@
+{
+  "evaluation_timestamp": "2026-10-17T12:24:39Z",
+  "total_queries": 4,
+  "in_catalog_queries": 3,
+  "out_catalog_queries": 1,
+  "metrics": {
+    "top_1_accuracy": 1.0,
+    "top_3_hit_rate": 1.0,
+    "mean_reciprocal_rank": 1.0,
+    "false_accept_rate": 0.0,
+    "latency_ms_mean": 275.43,
+    "latency_ms_p50": 63.24,
+    "latency_ms_p95": 788.19
+  },
+  "quality_breakdown": {
+    "good": {
+      "total": 3,
+      "top_1": 2,
+      "top_3": 2
+    },
+    "angled": {
+      "total": 1,
+      "top_1": 1,
+      "top_3": 1
+    }
+  }
+}
