@@ -1,15 +1,68 @@
 # Delta Faucet Identification POC
 
+[![Python 3.13](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/)
+[![FAISS](https://img.shields.io/badge/Vector%20Index-FAISS%20IndexFlatIP-green.svg)](https://github.com/facebookresearch/faiss)
+[![OpenCLIP](https://img.shields.io/badge/Vision%20Model-OpenCLIP%20ViT--B--32-purple.svg)](https://github.com/mlfoundations/open_clip)
+[![Streamlit](https://img.shields.io/badge/Frontend-Streamlit-red.svg)](https://streamlit.io/)
+[![Tests](https://img.shields.io/badge/Tests-25%20Passed%20(pytest)-success.svg)](https://pytest.org/)
+[![Architecture Guide](https://img.shields.io/badge/Architecture-ARCHITECTURE.md-informational.svg)](ARCHITECTURE.md)
+[![PDF Guide](https://img.shields.io/badge/PDF%20Report-Download-orange.svg)](Delta_Faucet_Identification_POC_Architecture_and_Flow.pdf)
+
 A visual search and identification proof of concept (POC) that matches customer-uploaded faucet photos against an authorized Delta Faucet catalog using OpenCLIP visual embeddings, FAISS vector indexing, and multi-signal hybrid reranking.
 
 ---
 
-## 1. System Architecture & Features
+## 1. System Architecture Design
 
-- **Safe Image Ingestion (`app/image_utils.py`)**: Validates uploaded files (JPEG, PNG, WebP), checks file size limits (default 10 MB), applies EXIF orientation transpose, converts to standardized RGB, and rejects corrupt or undersized images.
-- **OpenCLIP Embeddings (`app/embeddings.py`)**: Uses pretrained `ViT-B-32` (`openai` weights) running on CPU to generate 512-dimensional L2-normalized feature vectors. Embedder is cached outside Streamlit request loops.
-- **FAISS Inner-Product Vector Index (`app/index_store.py`)**: Fast cosine similarity retrieval over normalized vector embeddings with parallel metadata mapping and atomic persistence.
-- **Model-Level Candidate Aggregation (`app/retrieval.py`)**: Retrieves top-k image hits and groups them by canonical model ID (`max(image_similarity)`) so multiple photos of a single model do not crowd out other models.
+For a full technical specification, formulas, ER diagrams, and sequence flows, see [**ARCHITECTURE.md**](ARCHITECTURE.md) and the printable [**Delta Faucet Architecture & Flow Guide (PDF)**](Delta_Faucet_Identification_POC_Architecture_and_Flow.pdf).
+
+### High-Level Architecture Diagram
+
+![Delta Faucet Architecture Design](docs/architecture_design.svg)
+
+*(High-resolution raster version: [`docs/architecture_design.png`](docs/architecture_design.png))*
+
+### End-to-End Information Flow
+
+```mermaid
+flowchart TD
+    subgraph Offline ["1. Offline Ingestion & Vector Index Pipeline"]
+        PDF["Official PDF Catalogue<br/>(148 Pages)"] --> Extractor["scripts/extract_catalogue.py<br/>(PyMuPDF Multimodal Parser)"]
+        Extractor --> RawData["data/products.csv (297 Models)<br/>data/raw/images/*.jpg (297 Assets)"]
+        RawData --> Validator["scripts/validate_catalog.py<br/>(Schema & Asset Integrity)"]
+        Validator --> SQLite[("data/processed/<br/>faucet_catalog.db")]
+        Validator --> EmbedderOffline["OpenCLIP ViT-B-32<br/>(L2-Normalized 512-dim)"]
+        EmbedderOffline --> IndexBuilder["scripts/build_index.py<br/>(FAISS IndexFlatIP Builder)"]
+        IndexBuilder --> FAISSArtifact[("data/processed/<br/>faucet_index.faiss")]
+        IndexBuilder --> MetaArtifact[("data/processed/<br/>faucet_metadata.json")]
+    end
+
+    subgraph Online ["2. Online Query & Real-Time Inference"]
+        User(["Customer Upload<br/>(JPEG / PNG / WebP)"]) --> UI["app/ui.py<br/>(Streamlit Interface)"]
+        UI --> Service["app/service.py<br/>(Orchestration Gateway)"]
+        Service --> ImageUtils["app/image_utils.py<br/>(EXIF Transpose & RGB Guard)"]
+        ImageUtils --> EmbedderOnline["app/embeddings.py<br/>(OpenCLIP ViT-B-32 Inference)"]
+        EmbedderOnline --> Retriever["app/retrieval.py<br/>(Top-50 Vector Retrieval)"]
+        FAISSArtifact -.-> Retriever
+        MetaArtifact -.-> Retriever
+        SQLite -.-> Retriever
+        Retriever --> Aggregator["Model-Level Aggregator<br/>max(Image Similarity)"]
+        Aggregator --> Reranker["app/rerank.py<br/>(Multi-Signal Hybrid Reranker)"]
+        Reranker --> Uncertainty["Uncertainty Decision Engine<br/>(Conservative Guardrails)"]
+        Uncertainty --> Top3["Top 3 Model Cards<br/>+ Evidence + Feedback 👍/👎"]
+        Top3 --> UI
+    end
+
+    style Offline fill:#eff6ff,stroke:#93c5fd,stroke-width:2px;
+    style Online fill:#f0fdf4,stroke:#86efac,stroke-width:2px;
+```
+
+### Core Architectural Features
+
+- **Safe Image Ingestion (`app/image_utils.py`)**: Validates uploaded files (JPEG, PNG, WebP), checks file size limits (default 10 MB), applies EXIF orientation transpose, converts to standardized RGB, and protects against decompression bombs (`Image.MAX_IMAGE_PIXELS = 50_000_000`).
+- **OpenCLIP Embeddings (`app/embeddings.py`)**: Uses pretrained `ViT-B-32` (`openai` weights) running on CPU to generate 512-dimensional L2-normalized feature vectors. Embedder is cached as a singleton outside request loops.
+- **FAISS Inner-Product Vector Index (`app/index_store.py`)**: Fast cosine similarity retrieval over normalized vector embeddings with parallel metadata mapping and atomic file swaps.
+- **Model-Level Candidate Aggregation (`app/retrieval.py`)**: Retrieves top-k image hits and groups them by canonical model ID ($\max(S_{\text{img}})$) so multiple photos of a single model do not crowd out other models.
 - **Hybrid Reranking (`app/rerank.py`)**: Combines visual similarity with query text matching, user-specified attributes (category, finish), and catalog completeness. Automatically renormalizes weights when features are missing.
 - **Conservative Uncertainty Handling (`app/service.py`)**: Classifies results into `likely_match`, `needs_confirmation`, and `no_reliable_match`. Never presents geometric cosine similarity as an accuracy percentage or probability.
 - **Streamlit Interface (`app/ui.py`)**: Clean web UI showing uploaded image preview, top 3 candidate cards, image thumbnails, specification breakdown, evidence metrics, user feedback buttons, and the mandatory repair-part disclaimer.
@@ -190,4 +243,3 @@ When ready to transition from synthetic fixtures to production Delta catalog dat
    python scripts/build_index.py
    ```
 4. **Connect Live Inventory Feed**: Configure an API adapter in `app/catalog.py` to query Delta's ERP/inventory system using the canonical `model_number` or `model_id`.
-

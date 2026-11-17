@@ -9,6 +9,7 @@ from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 from reportlab.platypus import (
     HRFlowable,
+    Image as RLImage,
     KeepTogether,
     PageBreak,
     Paragraph,
@@ -434,6 +435,14 @@ def build_pdf():
         )
     )
     story.append(t_arch)
+    story.append(Spacer(1, 10))
+
+    # Architecture Design Diagram Graphic
+    arch_png = BASE_DIR / "docs" / "architecture_design.png"
+    if arch_png.is_file():
+        story.append(Paragraph("<b>Visual Subsystem Architecture Map:</b>", styles["SectionH2"]))
+        story.append(RLImage(str(arch_png), width=504, height=338))
+        story.append(Spacer(1, 8))
 
     # Page Break for Technical Mechanism Breakdown
     story.append(PageBreak())
@@ -660,3 +669,4 @@ def build_pdf():
 
 if __name__ == "__main__":
     build_pdf()
+
